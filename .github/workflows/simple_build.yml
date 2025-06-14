@@ -55,7 +55,7 @@ jobs:
           --opt_level=4 --opt_for_speed=2 --use_hw_mpy=F5 --advice:hw_config=all \
           --printf_support=nofloat --diag_warning=225 --diag_wrap=off --display_error_number --emit_warnings_as_errors \
           --include_path=$COMPILER_CGT_PATH/include --include_path=$CCS_COMPONENTS_PATH/include --include_path=. \
-          --define=__$PROJECT_MCU__ --define=_FRWP_ENABLE --define=_INFO_FRWP_ENABLE \
+          --define=__MSP430FR2676__ --define=_FRWP_ENABLE --define=_INFO_FRWP_ENABLE \
           ${C_FILES[*]} \
           --run_linker \
           --heap_size=160 --stack_size=160 --cinit_hold_wdt=on --priority --reread_libs --warn_sections --rom_model \
