@@ -1,0 +1,9 @@
+.ccsproject
+.launches/
+.settings/
+program/private_*
+program/*.data
+targetConfigs/
+Release*/
+Debug*/
+Log/
