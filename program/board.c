@@ -6,7 +6,7 @@
 #include "board.h"
 
 volatile uint8_t IRQ_Global = IRQ_SOURCE_NONE;
-char UART_RX_BUFFER[0x300] = {0};
+char UART_RX_BUFFER[0x300];
 uint16_t cbRxBuffer = 0;
 
 void BOARD_init()
