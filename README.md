@@ -30,8 +30,8 @@ To practice, for POC, and for the lulz, a mini-board is also/will be available: 
 
 ## Authors
 
-Benjamin DELPY ðŸ¥� `gentilkiwi`, you can contact me on Twitter ( @gentilkiwi ) or by mail ( benjamin [at] gentilkiwi.com )  
-Tear off part is 99% the (crazy) work of @SecLabz, see his repository https://github.com/SecLabz/near-field-chaos for more informations, and functionnalities! â�¤ï¸�
+Benjamin DELPY 🥝 gentilkiwi, you can contact me on Twitter ( @gentilkiwi ) or by mail ( benjamin [at] gentilkiwi.com )  
+Tear off part is 99% the (crazy) work of @SecLabz, see his repository https://github.com/SecLabz/near-field-chaos for more informations, and functionnalities! ❤️
 
 This is a personal development, please respect its philosophy and don't use it for bad things!
 
