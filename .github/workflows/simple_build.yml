@@ -59,7 +59,7 @@ jobs:
         PROJECT_MCU=${{matrix.BUILD_MCU}}
         
         PROJECT_NAME=${${{matrix.BUILD_MCU}}}
-        echo $PROJECT_NAME
+        echo "PROJECT_NAME=$PROJECT_NAME" >> "$GITHUB_ENV"
         
         cl430 --verbose --parallel=$(nproc) \
           --silicon_version=mspx --code_model=large --data_model=small --silicon_errata=CPU21 --silicon_errata=CPU22 --silicon_errata=CPU40 \
@@ -84,7 +84,7 @@ jobs:
     - name: Upload artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: ${{env[${{matrix.BUILD_MCU}}]}}
+        name: ${{env.PROJECT_NAME}}
         compression-level: 9
         path: |
           ${{github.event.repository.name}}/*.out
