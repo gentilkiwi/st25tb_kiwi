@@ -129,24 +129,34 @@ void MODE_tear()
 
 uint8_t MODE_tear_Counter(const uint8_t counter, const uint32_t current, uint32_t target)
 {
-    uint8_t ret;
+    uint8_t ret, led_index;
 
+#if defined(__MSP430FR2476__)
+    led_index = (counter == ST25TB_IDX_COUNTER1) ? 0 : 1;
+#elif defined(__MSP430FR2676__)
+    led_index = NB_LEDS_MODES + (counter - (6 - counter));
+#endif
     if(current < target)
     {
         kprintf("|%s| Sector %hu - Start" UART_NEWLINE, __FUNCTION__, counter);
-
-        LED_ON(NB_LEDS_MODES + (counter - (6 - counter)));
-
+#if defined(__MSP430FR2476__)
+        LED_OFF(led_index);
+#elif defined(__MSP430FR2676__)
+        LED_ON(led_index);
+#endif
         ret = st25tb_tear_off(counter, current, target, 0);
         kprintf("\n|%s| Sector %hu - ", __FUNCTION__, counter);
-
-
+#if defined(__MSP430FR2676__)
         LEDS_Bitmask(LEDS_SLOTS, NB_LEDS_SLOTS - 4, 0);
+#endif
         LEDS_STATUS_Bitmask(0b000);
         if(ret)
         {
+#if defined(__MSP430FR2676__)
+        led_index++;
+#endif
+            LED_ON(led_index);
             kprintf("OK" UART_NEWLINE);
-            LED_ON(NB_LEDS_MODES + (counter + (counter - 5)));
         }
         else
         {
@@ -310,8 +320,11 @@ void st25tb_tear_off_adjust_timing(int *tear_off_us, uint32_t tear_off_adjustmen
 uint8_t st25tb_tear_off(const uint8_t block_address, uint32_t current_value, uint32_t target_value, uint32_t tear_off_adjustment_us)
 {
     uint8_t result, trigger = 1;
-
+#if defined(__MSP430FR2476__)
+    uint8_t led_index = (block_address == ST25TB_IDX_COUNTER1) ? 0 : 1, led_cnt = 0;
+#elif defined(__MSP430FR2676__)
     uint8_t leds_bits = 0b0001;
+#endif
     uint32_t read_value, last_consolidated_value = 0, tear_off_value;
 
     int tear_off_us = TEAR_OFF_START_OFFSET_US;
@@ -374,7 +387,7 @@ uint8_t st25tb_tear_off(const uint8_t block_address, uint32_t current_value, uin
                 last_consolidated_value = read_value;
                 tear_off_value = st25tb_tear_off_next_value(current_value, 0);
                 trigger = 1;
-                LEDS_STATUS_Bitmask(0b010);
+                LEDS_STATUS_Bitmask(1 << LED_OFFSET_STATUS_GREEN);
                 st25tb_tear_off_log(tear_off_us, GREEN, read_value);
             }
         }
@@ -384,7 +397,7 @@ uint8_t st25tb_tear_off(const uint8_t block_address, uint32_t current_value, uin
             trigger = !trigger;
             current_value = read_value;
             st25tb_tear_off_adjust_timing(&tear_off_us, tear_off_adjustment_us);
-            LEDS_STATUS_Bitmask(0b001);
+            LEDS_STATUS_Bitmask(1 << LED_OFFSET_STATUS_BLUE);
             st25tb_tear_off_log(tear_off_us, BLUE, read_value);
         }
         else if (read_value < tear_off_value)
@@ -393,18 +406,25 @@ uint8_t st25tb_tear_off(const uint8_t block_address, uint32_t current_value, uin
             trigger = 1;
             current_value = read_value;
             st25tb_tear_off_adjust_timing(&tear_off_us, tear_off_adjustment_us);
-            LEDS_STATUS_Bitmask(0b100);
+            LEDS_STATUS_Bitmask(1 << LED_OFFSET_STATUS_RED);
             st25tb_tear_off_log(tear_off_us, RED, read_value);
         }
 
         tear_off_us++;
-
+#if defined(__MSP430FR2476__)
+        if(led_cnt & 0x10)
+        {
+            LED_TOGGLE(led_index);
+            led_cnt = 0;
+        }
+        led_cnt++;
+#elif defined(__MSP430FR2676__)
         LEDS_Bitmask(LEDS_SLOTS, NB_LEDS_SLOTS - 4, leds_bits);
         leds_bits <<= 1;
         if(leds_bits > 0b1000)
         {
             leds_bits = 0b0001;
         }
+#endif
     }
-
 }

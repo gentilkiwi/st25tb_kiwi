@@ -29,6 +29,70 @@ void BOARD_init()
         SFRIFG1 &= ~OFIFG;
     }
 
+#if defined(__MSP430FR2476__)
+    /*
+     * P1.0 LED_MOD_GREEN    output        |  P2.0                  output        |  P3.0                  output        |  P4.0 SW1              input/pullup  |  P5.0 n/a (LED2_G)     output        |  P6.0                  output        *
+     * P1.1 (LP Temp Sensor) input         |  P2.1 TRF_IRQ          input/irq     |  P3.1                  output        |  P4.1                  output        |  P5.1 LED_MOD_RED      output        |  P6.1                  output        *
+     * P1.2 TRF_EN           output        |  P2.2                  output        |  P3.2 SPI_MOSI         output/spi    |  P4.2 LED_STATUS_GREEN output        |  P5.2                  output        |  P6.2                  output        *
+     * P1.3 SPI_CS           output        |  P2.3 SW2              input/pullup  |  P3.3                  output        |  P4.3                  output        |  P5.3                  output        *
+     * P1.4 (LP UART TX)     output        |  P2.4 LED_STATUS_BLUE  output        |  P3.4                  output        |  P4.4                  output        |  P5.4 (DLP ""unused"") input         *
+     * P1.5 (LP UART RX)     input         |  P2.5 (LP UART RX)     input         |  P3.5 SPI_CLK          output/spi    |  P4.5                  output        |  P5.5                  output        *
+     * P1.6                  output        |  P2.6 (LP UART TX)     output        |  P3.6 SPI_MISO         input/spi     |  P4.6                  output        |  P5.6                  output        *
+     * P1.7                  output        |  P2.7 LED_STATUS_RED   output        |  P3.7                  output        |  P4.7 n/a (LED2_BLUE)  output        |  P5.7                  output        *
+     */
+    P1DIR = BIT0 | /*BIT1 | */BIT2 | BIT3 | BIT4 | /*BIT5 | */BIT6 | BIT7;
+    P2DIR = BIT0 | /*BIT1 | */BIT2 | /*BIT3 | */BIT4 | /*BIT5 | */BIT6 | BIT7;
+    P3DIR = BIT0 | BIT1 | BIT2 | BIT3 | BIT4 | BIT5 | /*BIT6 | */BIT7;
+    P4DIR = /*BIT0 | */BIT1 | BIT2 | BIT3 | BIT4 | BIT5 | BIT6 | BIT7;
+    P5DIR = BIT0 | BIT1 | BIT2 | BIT3 | /*BIT4 | */BIT5 | BIT6 | BIT7; // **unused DLP pin...**
+    P6DIR = BIT0 | BIT1 | BIT2;
+
+    /*
+     * P4.0 & P2.3 pullup or pulldown enabled for SW1 & SW2
+     * Pull-ups not strictly needed for SW1 & SW2:
+     * - st25tb_kiemul board: resistors on board for that ;
+     * - LP-MSP430FR2476: R9 and R10 are intended for that (per official schematics)
+     *   - Unfortunately, they are not actually populated on the official board
+     */
+    P2REN = BIT3;
+    P4REN = BIT0;
+
+    /*
+     * P4.0 & P2.3 pullup selected for SW1 & SW2
+     * P1.3 high for SPI_CS
+     * ... and all other to 0 (LEDs, etc.)
+     * Pull-ups not strictly needed for SW1 & SW2:
+     * - st25tb_kiemul board: resistors on board for that ;
+     * - LP-MSP430FR2476: R9 and R10 are intended for that (per official schematics)
+     *   - Unfortunately, they are not actually populated on the official board
+     */
+    P1OUT = BIT3;
+    P2OUT = BIT3;
+    P3OUT = 0;
+    P4OUT = BIT0;
+    P5OUT = 0;
+    P6OUT = 0;
+
+    /*
+     * P4.0 & P2.3 IRQ high to low selected for SW1 & SW2
+     * P2.1 low to high select for TRF_IRQ
+     */
+    P2IES = BIT3 | 0;
+    P4IES = BIT0;
+
+
+    /*
+     * P4.0 & P2.3 IRQ clear for SW1 & SW2
+     */
+    P2IFG = 0;
+    P4IFG = 0;
+
+    /*
+     * P4.0 & P2.3 IRQ enabled for SW1 & SW2
+     */
+    P2IE = BIT3;
+    P4IE = BIT0;
+#elif defined(__MSP430FR2676__)
     /*
      * P1.0 LED_MOD_REWRITE     output      |   P2.0 SPI_CS             output  |   P3.0 LED_SLOT1              output      |   P4.0 LED_STATUS_GREEN   output      *
      * P1.1 LED_MOD_DETECT      output      |   P2.1 TRF_IRQ            input   |   P3.1 LED_SLOT5              output      |   P4.1 LED_STATUS_RED     output      *
@@ -62,11 +126,10 @@ void BOARD_init()
 
     /*
      * P1.6 & P4.2 IRQ high to low selected for SW1 & SW2
-     * (P2.1 low to high select for TRF_IRQ)
+     * P2.1 low to high select for TRF_IRQ
      */
     P1IES = BIT6;
     P2IES = 0;
-    P3IES = 0;
     P4IES = BIT2;
 
     /*
@@ -80,11 +143,16 @@ void BOARD_init()
      */
     P1IE = BIT6;
     P4IE = BIT2;
-
+#endif
     /*
      * UART Primary function on P1.4 & P1.5
      */
     P1SEL0 = /*BIT0 | BIT1 | BIT2 | BIT3 | */BIT4 | BIT5 /*| BIT6 | BIT7*/;
+
+    /*
+     * SPI Primary function on P3.2, P3.5 & P3.6
+     */
+    P3SEL0 = /*BIT0 | BIT1 | */BIT2 | /*BIT3 | BIT4 | */BIT5 | BIT6 /*| BIT7*/;
 
     /*
      * UART parameters (115200 bauds/second, 8 bits, LSB first, 1 stop bit, no parity)
@@ -94,11 +162,6 @@ void BOARD_init()
     UCA0BRW = 8; // Clock prescaler setting of the Baud rate generator
     UCA0MCTLW = (247 << 8) | (10 << 4) | UCOS16_1; // Second modulation stage select, First modulation stage select, Oversampling mode enabled
     UCA0CTLW0 &= ~UCSWRST;
-
-    /*
-     * SPI Primary function on P3.2, P3.5 & P3.6
-     */
-    P3SEL0 = /*BIT0 | BIT1 | */BIT2 | /*BIT3 | BIT4 | */BIT5 | BIT6 /*| BIT7*/;
 
     /*
      * SPI parameters
@@ -247,6 +310,37 @@ uint8_t IRQ_Wait_for(uint8_t IRQWanted, uint8_t *pTRF7970A_irqStatus, uint16_t t
     return ret;
 }
 
+#if defined(__MSP430FR2476__)
+/*
+ * Interrupt vector for SW2 (P2.3) & TRF_IRQ (P2.1)
+ */
+#pragma vector=PORT2_VECTOR
+__interrupt void Port2_ISR(void)
+{
+    if(P2IV == P2IV_P2IFG1)
+    {
+        IRQ_Global |= IRQ_SOURCE_TRF7970A;
+    }
+    else
+    {
+        IRQ_Global |= IRQ_SOURCE_SW2;
+    }
+    __low_power_mode_off_on_exit();
+}
+
+/*
+ * Interrupt vector for SW1 (P4.0)
+ * Usually handled by switch(P4IV) and case P4IV__P4IFG0:, but as there is only one...
+ */
+#pragma vector=PORT4_VECTOR
+__interrupt void Port4_ISR(void)
+{
+    P4IFG = 0; // P4IFG &= ~BIT2;
+    IRQ_Global |= IRQ_SOURCE_SW1;
+    __low_power_mode_off_on_exit();
+}
+
+#elif defined(__MSP430FR2676__)
 /*
  * Interrupt vector for SW1 (P1.6)
  * Usually handled by switch(P1IV) and case P1IV__P1IFG6:, but as there is only one...
@@ -282,6 +376,7 @@ __interrupt void Port2_ISR(void)
     IRQ_Global |= IRQ_SOURCE_TRF7970A;
     __low_power_mode_off_on_exit();
 }
+#endif
 
 /*
  * Interrupt vector for Timer TA0

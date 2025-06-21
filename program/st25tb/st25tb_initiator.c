@@ -5,8 +5,6 @@
 */
 #include "st25tb_initiator.h"
 
-uint8_t ST25TB_Initiator_CMD_Completion();
-
 uint8_t ST25TB_Initiator_Initiate_Select_UID_C1_C2(uint8_t UID[8], uint8_t C1[4], uint8_t C2[4])
 {
     uint8_t BP_IrqSource, ui8ChipId;

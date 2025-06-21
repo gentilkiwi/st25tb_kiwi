@@ -59,16 +59,6 @@ uint8_t REFERENCES_FindAndLoadByUID(uint8_t pui8Data[8])
     if(i != REFERENCES_FIND_INVALID_INDEX)
     {
         return REFERENCES_Load(i);
-        /*
-#if (REFERENCES_ST25TB_SECTORS_INTERNAL == SLOTS_ST25TB_SECTORS_INTERNAL)
-        memcpy(SLOTS_ST25TB_Current, REFERENCES_ST25TB[i], sizeof(REFERENCES_ST25TB[i]));
-#elif (REFERENCES_ST25TB_SECTORS_INTERNAL < SLOTS_ST25TB_SECTORS_INTERNAL)
-        memcpy(SLOTS_ST25TB_Current, REFERENCES_ST25TB[i], sizeof(REFERENCES_ST25TB[i]) - (3 * 4));
-        memcpy(SLOTS_ST25TB_Current + SLOTS_ST25TB_INDEX_SYSTEM, REFERENCES_ST25TB[i] + REFERENCES_ST25TB_INDEX_SYSTEM, 3 * 4);
-#else
-#error REFERENCE size is > SLOT size
-#endif
-        return 1;*/
     }
 
     return 0;

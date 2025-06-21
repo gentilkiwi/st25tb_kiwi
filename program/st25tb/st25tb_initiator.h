@@ -25,6 +25,7 @@ uint8_t ST25TB_Initiator_CMD_Initiate(uint8_t *pui8ChipId);
 uint8_t ST25TB_Initiator_CMD_Select(const uint8_t ui8ChipId);
 uint8_t ST25TB_Initiator_CMD_Get_Uid(uint8_t pui8Data[8]);
 uint8_t ST25TB_Initiator_CMD_CONFIRMED_Get_Uid(uint8_t pui8Data[8]);
+uint8_t ST25TB_Initiator_CMD_Completion();
 uint8_t ST25TB_Initiator_CMD_Reset_To_Inventory();
 
 uint8_t ST25TB_Initiator_CMD_Read_Block(const uint8_t ui8BlockIdx, uint8_t pui8Data[4]);

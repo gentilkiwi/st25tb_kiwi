@@ -31,7 +31,7 @@ void MODE_rewrite()
                 LED_OFF(LED_INDEX_STATUS_RED);
                 LED_ON(LED_INDEX_STATUS_GREEN);
 
-                IRQ_Wait_for(IRQ_SOURCE_SW1 | IRQ_SOURCE_SW2, NULL, 0);
+                BP_IrqSource = IRQ_Wait_for(IRQ_SOURCE_SW1 | IRQ_SOURCE_SW2, NULL, 0);
 
                 LED_OFF(LED_INDEX_STATUS_GREEN);
             }

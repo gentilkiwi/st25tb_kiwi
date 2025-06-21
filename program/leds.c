@@ -6,6 +6,15 @@
 #include "leds.h"
 
 const LED LEDS[NB_LEDS] = {
+#if defined(__MSP430FR2476__)
+    // LEDS_MODES
+    /* 0 */ {&P1OUT, BIT0}, // LED_MOD_GREEN
+    /* 1 */ {&P5OUT, BIT1}, // LED_MOD_RED
+    // LEDS_STATUS
+    /* 0 */ {&P4OUT, BIT2}, // LED_STATUS_GREEN
+    /* 1 */ {&P2OUT, BIT7}, // LED_STATUS_RED
+    /* 2 */ {&P2OUT, BIT4}, // LED_STATUS_BLUE
+#elif defined(__MSP430FR2676__)
     // LEDS_MODES
     /* 0 */ {&P1OUT, BIT7}, // LED_MOD_EMULATE
     /* 1 */ {&P1OUT, BIT0}, // LED_MOD_REWRITE
@@ -25,6 +34,7 @@ const LED LEDS[NB_LEDS] = {
     /* 0 */ {&P3OUT, BIT7}, // LED_STATUS_BLUE
     /* 1 */ {&P4OUT, BIT0}, // LED_STATUS_GREEN
     /* 2 */ {&P4OUT, BIT1}, // LED_STATUS_RED
+#endif
 };
 
 void LEDS_Bitmask(const LED *LEDS_ARRAY, const uint8_t nbLeds, uint8_t bitmask)

@@ -46,7 +46,7 @@ void MODE_learn()
                 bNeedToReload = 1;
             }
         }
-
+#if defined(__MSP430FR2676__)
         if(BP_IrqSource & IRQ_SOURCE_SW2)
         {
             index++;
@@ -57,6 +57,7 @@ void MODE_learn()
             SLOTS_Change(index);
             bNeedToReload = 0;
         }
+#endif
     }
     while (!(BP_IrqSource & IRQ_SOURCE_SW1));
 

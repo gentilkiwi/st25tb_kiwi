@@ -20,8 +20,7 @@ uint8_t ST25TB_Target_AdjustIdxForSpecialAddr(uint8_t original)
 
 uint8_t ST25TB_Target_ResponseTo()
 {
-    uint8_t ret;
-    uint8_t cbData = 0, idx, delay;
+    uint8_t ret, cbData = 0, idx, delay;
     const uint8_t *pcbData = 0;
 
     switch(g_ui8_ST25TB_Buffer[0])

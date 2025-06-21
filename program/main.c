@@ -6,6 +6,21 @@
 #include "board.h"
 #include "modes.h"
 
+#if defined(__MSP430FR2476__)
+const KAKI_MODE Modes[] = {
+    {.function = MODE_emulate,  .ledsModesBitmask = 0b01,       .Name = "Emulate"},
+    {.function = MODE_rewrite,  .ledsModesBitmask = 0b10,       .Name = "Rewrite"},
+    {.function = MODE_field,    .ledsModesBitmask = 0b00,       .Name = "Field"},
+};
+
+const KAKI_MODE Modes_2[] = {
+    {.function = MODE_detect,   .ledsModesBitmask = 0b01,       .Name = "Detect"},
+    {.function = MODE_select,   .ledsModesBitmask = 0b10,       .Name = "Select"},
+    {.function = MODE_learn,    .ledsModesBitmask = 0b11,       .Name = "Learn"},
+    {.function = MODE_tear,     .ledsModesBitmask = 0b00,       .Name = "Tear!"},
+    {.function = MODE_cli,      .ledsModesBitmask = 0b00,       .Name = "CLI"},
+};
+#elif defined(__MSP430FR2676__)
 const KAKI_MODE Modes[] = {
     {.function = MODE_emulate,  .ledsModesBitmask = 1 << 0,     .Name = "Emulate"},
     {.function = MODE_rewrite,  .ledsModesBitmask = 1 << 1,     .Name = "Rewrite"},
@@ -20,10 +35,11 @@ const KAKI_MODE Modes_2[] = {
     {.function = MODE_tear,     .ledsModesBitmask = 1 << 4,     .Name = "Tear!"},
     {.function = MODE_cli,      .ledsModesBitmask = 0b10101,    .Name = "CLI"},
 };
+#endif
 
 const char KIWI_BANNER[] =  "\x1b[2J\x1b[3J\x1b[H" UART_NEWLINE
-    "  .#####.         ST25TB kiwi 0.1" UART_NEWLINE
-    " .## ^ ##.__ _    TI MSP430FR2676 & TRF7970A" UART_NEWLINE
+    "  .#####.         " ST25TB_BOARD_NAME " " ST25TB_BOARD_VERSION UART_NEWLINE
+    " .## ^ ##.__ _    TI " ST25TB_MCU_NAME " & TRF7970A" UART_NEWLINE
     " ## / \\ /   ('>-  /***" UART_NEWLINE
     " ## \\ / | K  |     Benjamin DELPY `gentilkiwi` ( benjamin@gentilkiwi.com )" UART_NEWLINE
     " '## v #\\____/" UART_NEWLINE
@@ -73,10 +89,10 @@ void main(void)
     }
 
     printf(
-            UART_NEWLINE "ST25TB kiwi mode       : %s" UART_NEWLINE
-            "ST25TB kiwi UART       : %s" UART_NEWLINE
-            "ST25TB Current Slot    : %u" UART_NEWLINE
-            "ST25TB Total slots     : %hhu" UART_NEWLINE
+            UART_NEWLINE "ST25TB board mode      : %s" UART_NEWLINE
+            "ST25TB board UART      : %s" UART_NEWLINE
+            "ST25TB Current Slot    : %hu" UART_NEWLINE
+            "ST25TB Total slots     : %hu" UART_NEWLINE
             "ST25TB support for     : "
 #if defined(SLOTS_ST25TB_SUPPORT_4K)
             "4Kb"

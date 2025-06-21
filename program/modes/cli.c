@@ -4,7 +4,7 @@
     Licence : https://creativecommons.org/licenses/by/4.0/
 */
 #pragma once
-#include "../modes.h"
+#include "cli.h"
 #include "cli/cli_std.h"
 #include "cli/cli_config.h"
 #include "cli/cli_dump.h"

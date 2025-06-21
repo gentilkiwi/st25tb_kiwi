@@ -8,6 +8,18 @@
 #include <stdint.h>
 #include <string.h>
 
+#if defined(__MSP430FR2476__)
+#define ST25TB_BOARD_NAME       "ST25TB kiemul"
+#define ST25TB_BOARD_VERSION    "0.1"
+#define ST25TB_MCU_NAME         "MSP430FR2476"
+#elif defined(__MSP430FR2676__)
+#define ST25TB_BOARD_NAME       "ST25TB kiwi"
+#define ST25TB_BOARD_VERSION    "0.1"
+#define ST25TB_MCU_NAME         "MSP430FR2676"
+#else
+#error unknown board?
+#endif
+
 #include "uart.h"
 #include "slots.h"
 #include "references.h"
@@ -49,35 +61,54 @@ uint8_t IRQ_Wait_for(uint8_t IRQWanted, uint8_t *pTRF7970A_irqStatus, uint16_t t
 
 #define count_of(a) (sizeof(a)/sizeof((a)[0]))
 
-#define SW1_PORT        P1IN
-#define SW1_BIT         BIT6
+#define SW1_IS_PRESSED()                (!(SW1_PORT & SW1_BIT))
+#define SW2_IS_PRESSED()                (!(SW2_PORT & SW2_BIT))
 
-#define SW2_PORT        P4IN
-#define SW2_BIT         BIT2
+#define UART_ENABLE_RX_IRQ()            do{ UCA0IE = UCRXIE_1 ;} while(0)
+#define UART_DISABLE_RX_IRQ()           do{ UCA0IE = 0; } while(0)
 
-#define SW1_IS_PRESSED()    (!(SW1_PORT & SW1_BIT))
-#define SW2_IS_PRESSED()    (!(SW2_PORT & SW2_BIT))
+#define CRC_VALUE                       (*(uint16_t *)(TLVMEM_START + 0x02))
+#define DEVICE_ID                       (*(uint16_t *)(TLVMEM_START + 0x04))
 
-#define UART_ENABLE_RX_IRQ()    do{ UCA0IE = UCRXIE_1 ;} while(0)
-#define UART_DISABLE_RX_IRQ()   do{ UCA0IE = 0; } while(0)
+#define DIE_LOT_WAFER_ID                (*(uint32_t *)(TLVMEM_START + 0x0a))
+#define DIE_LOT_WAFER_X_POS             (*(uint16_t *)(TLVMEM_START + 0x0e))
+#define DIE_LOT_WAFER_Y_POS             (*(uint16_t *)(TLVMEM_START + 0x10))
 
-#define TRF_CS_PORT     P2OUT
-#define TRF_CS_BIT      BIT0
+#define CALADC_15V_30C                  (*(uint16_t *)(TLVMEM_START + 0x1a))
+#define CALADC_15V_105C                 (*(uint16_t *)(TLVMEM_START + 0x1c))
 
-#define TRF_EN_PORT     P2OUT
-#define TRF_EN_BIT      BIT7
+#if defined(__MSP430FR2476__)
+#define SW1_PORT                        P4IN
+#define SW1_BIT                         BIT0
 
-#define TRF_IRQ_PORT    P2IN
-#define TRF_IRQ_IFG     P2IFG
-#define TRF_IRQ_IE      P2IE
-#define TRF_IRQ_BIT     BIT1
+#define SW2_PORT                        P2IN
+#define SW2_BIT                         BIT3
 
-#define CRC_VALUE           (*(uint16_t *)(TLVMEM_START + 0x02))
-#define DEVICE_ID           (*(uint16_t *)(TLVMEM_START + 0x04))
+#define TRF_CS_PORT                     P1OUT
+#define TRF_CS_BIT                      BIT3
 
-#define DIE_LOT_WAFER_ID    (*(uint32_t *)(TLVMEM_START + 0x0a))
-#define DIE_LOT_WAFER_X_POS (*(uint16_t *)(TLVMEM_START + 0x0e))
-#define DIE_LOT_WAFER_Y_POS (*(uint16_t *)(TLVMEM_START + 0x10))
+#define TRF_EN_PORT                     P1OUT
+#define TRF_EN_BIT                      BIT2
 
-#define CALADC_15V_30C      (*(uint16_t *)(TLVMEM_START + 0x1a))
-#define CALADC_15V_105C     (*(uint16_t *)(TLVMEM_START + 0x1c))
+#define TRF_IRQ_PORT                    P2IN
+#define TRF_IRQ_IFG                     P2IFG
+#define TRF_IRQ_IE                      P2IE
+#define TRF_IRQ_BIT                     BIT1
+#elif defined(__MSP430FR2676__)
+#define SW1_PORT                        P1IN
+#define SW1_BIT                         BIT6
+
+#define SW2_PORT                        P4IN
+#define SW2_BIT                         BIT2
+
+#define TRF_CS_PORT                     P2OUT
+#define TRF_CS_BIT                      BIT0
+
+#define TRF_EN_PORT                     P2OUT
+#define TRF_EN_BIT                      BIT7
+
+#define TRF_IRQ_PORT                    P2IN
+#define TRF_IRQ_IFG                     P2IFG
+#define TRF_IRQ_IE                      P2IE
+#define TRF_IRQ_BIT                     BIT1
+#endif
