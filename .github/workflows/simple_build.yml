@@ -53,7 +53,7 @@ jobs:
 #      run: ./mklib --parallel=$(nproc) --pattern=rts430x_sc_sd_eabi.lib
 
     - name: Build project
-      working-directory: ${{env.PROJECT_NAME}}
+      working-directory: ${{github.event.repository.name}}
       run: |
         C_FILES=( $(find . -name '*.c') )
         PROJECT_MCU=${{matrix.BUILD_MCU}}
@@ -62,8 +62,8 @@ jobs:
         OMCU=${PROJECT_MCU@U}
         echo $OMCU
         
-        ZMCU=${${{matrix.BUILD_MCU}}@U}
-        echo $ZMCU
+        PROJECT_NAME=${${{matrix.BUILD_MCU}}}
+        echo $PROJECT_NAME
         
         cl430 --verbose --parallel=$(nproc) \
           --silicon_version=mspx --code_model=large --data_model=small --silicon_errata=CPU21 --silicon_errata=CPU22 --silicon_errata=CPU40 \
@@ -76,10 +76,10 @@ jobs:
           --heap_size=160 --stack_size=160 --cinit_hold_wdt=on --priority --reread_libs --warn_sections --rom_model \
           --search_path=$COMPILER_CGT_PATH/lib --search_path=$CCS_COMPONENTS_PATH/lib \
           --cinit_compression=off \
-          --output_file=${{matrix.BUILD_MCU}}.out \
+          --output_file=$PROJECT_NAME.out \
           --library=FR2xx/frwp_init.a --library=libc.a lnk_${{matrix.BUILD_MCU}}.cmd
         
-        hex430 --memwidth=8 --romwidth=8 --diag_wrap=off --intel --outfile=${{matrix.BUILD_MCU}}.hex ${{matrix.BUILD_MCU}}.out
+        hex430 --memwidth=8 --romwidth=8 --diag_wrap=off --intel --outfile=$PROJECT_NAME.hex $PROJECT_NAME.out
         
         strip430 --postlink ${{matrix.BUILD_MCU}}.out
         
