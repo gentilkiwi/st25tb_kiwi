@@ -56,7 +56,7 @@ jobs:
       working-directory: ${{github.event.repository.name}}
       run: |
         C_FILES=( $(find . -name '*.c') )
-        PROJECT_MCU=${{matrix.BUILD_MCU}}
+        PROJECT_MCU=${{{matrix.BUILD_MCU}}@U}
         
         echo $PROJECT_MCU
         OMCU=${PROJECT_MCU@U}
