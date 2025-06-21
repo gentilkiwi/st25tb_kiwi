@@ -62,6 +62,9 @@ jobs:
         OMCU=${PROJECT_MCU@U}
         echo $OMCU
         
+        ZMCU=${${{matrix.BUILD_MCU}}@U}
+        echo $ZMCU
+        
         cl430 --verbose --parallel=$(nproc) \
           --silicon_version=mspx --code_model=large --data_model=small --silicon_errata=CPU21 --silicon_errata=CPU22 --silicon_errata=CPU40 \
           --opt_level=4 --opt_for_speed=2 --use_hw_mpy=F5 --advice:hw_config=all \
