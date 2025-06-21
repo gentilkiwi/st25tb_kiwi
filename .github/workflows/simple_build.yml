@@ -56,7 +56,7 @@ jobs:
       working-directory: ${{env.PROJECT_NAME}}
       run: |
         C_FILES=( $(find . -name '*.c') )
-        PROJECT_MCU=${{matrix.BUILD_MCU}@U}
+        PROJECT_MCU=${matrix.BUILD_MCU@U}
         
         cl430 --verbose --parallel=$(nproc) \
           --silicon_version=mspx --code_model=large --data_model=small --silicon_errata=CPU21 --silicon_errata=CPU22 --silicon_errata=CPU40 \
