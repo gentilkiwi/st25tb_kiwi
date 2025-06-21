@@ -56,13 +56,14 @@ jobs:
       working-directory: ${{env.PROJECT_NAME}}
       run: |
         C_FILES=( $(find . -name '*.c') )
+        PROJECT_MCU=${{matrix.BUILD_MCU}@U}
         
         cl430 --verbose --parallel=$(nproc) \
           --silicon_version=mspx --code_model=large --data_model=small --silicon_errata=CPU21 --silicon_errata=CPU22 --silicon_errata=CPU40 \
           --opt_level=4 --opt_for_speed=2 --use_hw_mpy=F5 --advice:hw_config=all \
           --printf_support=nofloat --diag_warning=225 --diag_wrap=off --display_error_number --emit_warnings_as_errors \
           --include_path=$COMPILER_CGT_PATH/include --include_path=$CCS_COMPONENTS_PATH/include --include_path=. \
-          --define=__${{matrix.BUILD_MCU}@U}__ --define=_FRWP_ENABLE --define=_INFO_FRWP_ENABLE \
+          --define=__${PROJECT_MCU}__ --define=_FRWP_ENABLE --define=_INFO_FRWP_ENABLE \
           ${C_FILES[*]} \
           --run_linker \
           --heap_size=160 --stack_size=160 --cinit_hold_wdt=on --priority --reread_libs --warn_sections --rom_model \
