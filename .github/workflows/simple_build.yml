@@ -77,7 +77,7 @@ jobs:
         
         hex430 --memwidth=8 --romwidth=8 --diag_wrap=off --intel --outfile=$PROJECT_NAME.hex $PROJECT_NAME.out
         
-        strip430 --postlink ${{matrix.BUILD_MCU}}.out
+        strip430 --postlink $PROJECT_NAME.out
         
         ls -al *.out *.hex
       
