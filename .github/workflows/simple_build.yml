@@ -59,6 +59,8 @@ jobs:
         PROJECT_MCU=${{matrix.BUILD_MCU}}
         
         echo $PROJECT_MCU
+        OMCU=${PROJECT_MCU@U}
+        echo $OMCU
         
         cl430 --verbose --parallel=$(nproc) \
           --silicon_version=mspx --code_model=large --data_model=small --silicon_errata=CPU21 --silicon_errata=CPU22 --silicon_errata=CPU40 \
